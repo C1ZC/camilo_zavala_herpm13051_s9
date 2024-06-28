@@ -62,7 +62,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.okhttp3)
     implementation(libs.glide)
-    implementation(libs.mpandroidchart) // Nota: Asegúrate de que sea 3.1.0
+    implementation(libs.mpandroidchart)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
