@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var productAdapter: ProductAdapter
@@ -50,17 +49,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_add -> {
                 startActivity(Intent(this, AddProductActivity::class.java))
-                return true
+                true
             }
             R.id.menu_chart -> {
                 startActivity(Intent(this, ChartActivity::class.java))
-                return true
+                true
             }
+            R.id.menu_delete -> {
+                deleteSelectedProducts()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun loadProducts() {
@@ -68,6 +71,23 @@ class MainActivity : AppCompatActivity() {
             val products = productRepository.getAllProducts()
             withContext(Dispatchers.Main) {
                 productAdapter.setProducts(products)
+            }
+        }
+    }
+
+    private fun deleteProduct(product: Product) {
+        CoroutineScope(Dispatchers.IO).launch {
+            productRepository.deleteProduct(product)
+            loadProducts()
+        }
+    }
+
+    private fun deleteSelectedProducts() {
+        val selectedProducts = productAdapter.getSelectedProducts()
+        CoroutineScope(Dispatchers.IO).launch {
+            selectedProducts.forEach { productRepository.deleteProduct(it) }
+            withContext(Dispatchers.Main) {
+                loadProducts()
             }
         }
     }

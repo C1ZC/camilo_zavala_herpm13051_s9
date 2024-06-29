@@ -7,14 +7,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-class ProductAdapter(private var products: MutableList<Product>) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+import com.bumptech.glide.request.RequestOptions
 
-    class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val title: TextView = itemView.findViewById(R.id.productTitle)
-        val price: TextView = itemView.findViewById(R.id.productPrice)
-        val rating: TextView = itemView.findViewById(R.id.productRating)
-        val image: ImageView = itemView.findViewById(R.id.productImage)
-    }
+class ProductAdapter(
+    private val products: MutableList<Product>
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+
+    private val selectedProducts = mutableListOf<Product>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.product_item, parent, false)
@@ -23,18 +22,56 @@ class ProductAdapter(private var products: MutableList<Product>) : RecyclerView.
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
-        holder.title.text = product.title
-        holder.price.text = product.price.toString()
-        holder.rating.text = product.rating.rate.toString()
-        Glide.with(holder.itemView.context).load(product.image).into(holder.image)
+        holder.bind(product)
     }
 
-    override fun getItemCount(): Int {
-        return products.size
-    }
+    override fun getItemCount(): Int = products.size
 
-    fun setProducts(products: List<Product>) {
-        this.products = products.toMutableList()
+    fun setProducts(newProducts: List<Product>) {
+        products.clear()
+        products.addAll(newProducts)
         notifyDataSetChanged()
+    }
+
+    fun getSelectedProducts(): List<Product> = selectedProducts
+
+    fun toggleSelection(product: Product) {
+        if (selectedProducts.contains(product)) {
+            selectedProducts.remove(product)
+        } else {
+            selectedProducts.add(product)
+        }
+        notifyDataSetChanged()
+    }
+
+    inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val title: TextView = itemView.findViewById(R.id.productTitle)
+        private val price: TextView = itemView.findViewById(R.id.productPrice)
+        private val rating: TextView = itemView.findViewById(R.id.productRating)
+        private val image: ImageView = itemView.findViewById(R.id.productImage)
+
+        fun bind(product: Product) {
+            title.text = product.title
+            price.text = product.price.toString()
+            rating.text = "Rating: ${product.rating.rate} (${product.rating.count})"
+
+            Glide.with(itemView.context)
+                .load(product.image)
+                .apply(RequestOptions().placeholder(R.drawable.placeholder).error(R.drawable.error))
+                .into(image)
+
+            itemView.setOnLongClickListener {
+                toggleSelection(product)
+                true
+            }
+
+            itemView.setBackgroundColor(
+                if (selectedProducts.contains(product)) {
+                    itemView.context.getColor(R.color.selected_item)
+                } else {
+                    itemView.context.getColor(R.color.default_item)
+                }
+            )
+        }
     }
 }

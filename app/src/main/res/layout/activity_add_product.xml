@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,23 +5,51 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/productTitleInput"
+        android:id="@+id/productName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title" />
+        android:hint="Product Name" />
 
     <EditText
-        android:id="@+id/productPriceInput"
+        android:id="@+id/productPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Price"
+        android:hint="Product Price"
         android:inputType="numberDecimal" />
 
-    <Button
-        android:id="@+id/addButton"
+    <EditText
+        android:id="@+id/productDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Product Description" />
+
+    <EditText
+        android:id="@+id/productCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Product Category" />
+
+    <RatingBar
+        android:id="@+id/productRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="0.5" />
+
+    <ImageView
+        android:id="@+id/productImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="Product Image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background" />
+
+    <Button
+        android:id="@+id/addProductButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Add Product"
-        android:layout_gravity="center" />
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>

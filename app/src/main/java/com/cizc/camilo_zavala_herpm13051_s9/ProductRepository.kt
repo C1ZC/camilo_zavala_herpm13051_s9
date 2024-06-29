@@ -2,13 +2,15 @@ package com.cizc.camilo_zavala_herpm13051_s9
 
 class ProductRepository(private val dbHandler: DatabaseHandler) {
 
-    suspend fun addProducts(products: List<Product>) {
-        for (product in products) {
-            dbHandler.addProduct(product)
-        }
+    fun getAllProducts(): List<Product> {
+        return dbHandler.getAllProducts()
     }
 
-    suspend fun getAllProducts(): List<Product> {
-        return dbHandler.getAllProducts()
+    fun addProducts(products: List<Product>) {
+        products.forEach { dbHandler.addProduct(it) }
+    }
+
+    fun deleteProduct(product: Product) {
+        dbHandler.deleteProduct(product.id)
     }
 }
