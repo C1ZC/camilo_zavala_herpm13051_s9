@@ -3,9 +3,11 @@ package com.cizc.camilo_zavala_herpm13051_s9
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +15,7 @@ import com.cizc.camilo_zavala_herpm13051_s9.DatabaseHandler
 import com.cizc.camilo_zavala_herpm13051_s9.Product
 import com.cizc.camilo_zavala_herpm13051_s9.R
 import com.cizc.camilo_zavala_herpm13051_s9.Rating
+import java.io.ByteArrayOutputStream
 
 class AddProductActivity : AppCompatActivity() {
 
@@ -58,50 +61,57 @@ class AddProductActivity : AppCompatActivity() {
         }
 
         addProductButton.setOnClickListener {
-            addProduct()
-        }
-    }
-
-    private fun addProduct() {
-        val name = productName.text.toString()
-        val price = productPrice.text.toString().toDoubleOrNull()
-        val description = productDescription.text.toString()
-        val category = productCategory.text.toString()
-        val rating = productRating.rating
-        if (name.isNotEmpty() && price != null && description.isNotEmpty() && category.isNotEmpty() && imageUri != null) {
-            val newProduct = Product(
-                id = 0,
-                title = name,
-                price = price,
-                description = description,
-                category = category,
-                image = imageUri.toString(),
-                rating = Rating(rate = rating.toDouble(), count = 0)
-            )
-            val dbHandler = DatabaseHandler(this)
-            dbHandler.addProduct(newProduct)
-            Toast.makeText(this, "Product added successfully", Toast.LENGTH_SHORT).show()
+            saveProduct()
+            setResult(Activity.RESULT_OK)
             finish()
-        } else {
-            Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
             when (requestCode) {
                 PICK_IMAGE -> {
-                    imageUri = data?.data
+                    imageUri = data.data
                     productImage.setImageURI(imageUri)
                 }
                 TAKE_PHOTO -> {
-                    val photo = data?.extras?.get("data") as Bitmap
-                    val path = MediaStore.Images.Media.insertImage(contentResolver, photo, "Title", null)
-                    imageUri = Uri.parse(path)
-                    productImage.setImageURI(imageUri)
+                    val bitmap = data.extras?.get("data") as Bitmap
+                    productImage.setImageBitmap(bitmap)
+                    imageUri = getImageUri(bitmap)
                 }
             }
         }
+    }
+
+    private fun getImageUri(bitmap: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "Title", null)
+        return Uri.parse(path)
+    }
+
+    private fun convertImageUriToBase64(uri: Uri): String {
+        val inputStream = contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        val byteArray = outputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    private fun saveProduct() {
+        val imageBase64 = imageUri?.let { convertImageUriToBase64(it) }
+        val product = Product(
+            id = 0, // Valor temporal para el ID
+            title = productName.text.toString(),
+            price = productPrice.text.toString().toDouble(),
+            description = productDescription.text.toString(),
+            category = productCategory.text.toString(),
+            image = imageBase64 ?: "",
+            rating = Rating(productRating.rating.toDouble(), 0)
+        )
+        val dbHandler = DatabaseHandler(this)
+        dbHandler.addProduct(product)
     }
 }

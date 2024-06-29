@@ -1,5 +1,6 @@
 package com.cizc.camilo_zavala_herpm13051_s9
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -41,6 +42,16 @@ class MainActivity : AppCompatActivity() {
             }
             loadProducts()
         }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                if (layoutManager.findLastCompletelyVisibleItemPosition() == productAdapter.itemCount - 1) {
+                    // Load more products here
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -51,18 +62,27 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_add -> {
-                startActivity(Intent(this, AddProductActivity::class.java))
-                true
-            }
-            R.id.menu_chart -> {
-                startActivity(Intent(this, ChartActivity::class.java))
+                val intent = Intent(this, AddProductActivity::class.java)
+                startActivityForResult(intent, ADD_PRODUCT_REQUEST)
                 true
             }
             R.id.menu_delete -> {
                 deleteSelectedProducts()
                 true
             }
+            R.id.menu_chart -> {
+                val intent = Intent(this, ChartActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ADD_PRODUCT_REQUEST && resultCode == Activity.RESULT_OK) {
+            loadProducts()
         }
     }
 
@@ -90,5 +110,9 @@ class MainActivity : AppCompatActivity() {
                 loadProducts()
             }
         }
+    }
+
+    companion object {
+        private const val ADD_PRODUCT_REQUEST = 1
     }
 }
