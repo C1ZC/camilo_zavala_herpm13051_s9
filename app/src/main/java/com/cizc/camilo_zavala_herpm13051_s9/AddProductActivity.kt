@@ -11,10 +11,6 @@ import android.util.Base64
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.cizc.camilo_zavala_herpm13051_s9.DatabaseHandler
-import com.cizc.camilo_zavala_herpm13051_s9.Product
-import com.cizc.camilo_zavala_herpm13051_s9.R
-import com.cizc.camilo_zavala_herpm13051_s9.Rating
 import java.io.ByteArrayOutputStream
 
 class AddProductActivity : AppCompatActivity() {
