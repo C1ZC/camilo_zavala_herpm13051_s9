@@ -6,9 +6,9 @@
         android:showAsAction="always" />
     <item
         android:id="@+id/menu_chart"
-        android:title="Chart"
         android:orderInCategory="2"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="Grafic" />
     <item
         android:id="@+id/menu_delete"
         android:title="Delete Selected"

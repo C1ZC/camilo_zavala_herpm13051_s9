@@ -1,5 +1,8 @@
 package com.cizc.camilo_zavala_herpm13051_s9
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,10 +58,24 @@ class ProductAdapter(
             price.text = product.price.toString()
             rating.text = "Rating: ${product.rating.rate} (${product.rating.count})"
 
-            Glide.with(itemView.context)
-                .load(product.image)
-                .apply(RequestOptions().placeholder(R.drawable.placeholder).error(R.drawable.error))
-                .into(image)
+            if (product.image.startsWith("data:image") || product.image.length > 1000) {
+                // Remove the prefix if it exists
+                val base64Image = product.image.substringAfter("base64,")
+                val imageBytes = Base64.decode(base64Image, Base64.DEFAULT)
+                val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+                // Load the bitmap into the ImageView
+                Glide.with(itemView.context)
+                    .load(decodedImage)
+                    .apply(RequestOptions().placeholder(R.drawable.placeholder).error(R.drawable.error))
+                    .into(image)
+            } else {
+                // Load the image from URL or path
+                Glide.with(itemView.context)
+                    .load(product.image)
+                    .apply(RequestOptions().placeholder(R.drawable.placeholder).error(R.drawable.error))
+                    .into(image)
+            }
 
             itemView.setOnLongClickListener {
                 toggleSelection(product)
