@@ -65,4 +65,4 @@ Si desea contribuir a este proyecto:
 Este proyecto está licenciado bajo la Licencia MIT - vea el archivo [LICENSE](LICENSE) para más detalles.
 
 ## Contacto
-Para cualquier consulta o comentario, por favor contacte a Camilo Zavala en [su_correo@example.com].
+Para cualquier consulta o comentario, por favor contacte a Camilo Zavala en [camilo.zavala.c@gmail.com].
